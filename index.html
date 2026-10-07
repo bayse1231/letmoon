@@ -6,7 +6,7 @@
 <title>Bayasgalan Tumendamba — Media Designer</title>
 <meta name="description" content="Logos, posters, campaigns and short edits by Bayasgalan Tumendamba, a media designer in Ulaanbaatar.">
 <meta name="theme-color" content="#0a0a0a">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -21,6 +21,7 @@
     --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
     --font-display: 'Bebas Neue', sans-serif;
     --font-body: 'Outfit', sans-serif;
+    --font-hud: 'Rajdhani', sans-serif;
   }
 
   html { scroll-behavior: smooth; }
@@ -153,60 +154,134 @@
     margin-top: 2rem;
   }
 
-  /* HERO */
+  /* HERO — Cyberpunk-style: neon, scanlines, HUD frame and a name that glitches now and then */
   .hero {
+    --cp-yellow: #fcee0a;
+    --cp-cyan: #00f0ff;
+    --cp-red: #ff003c;
     min-height: 100svh;
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    align-items: center;
-    gap: 3rem;
-    padding: 8rem 3rem 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 3rem 5rem;
     position: relative;
     overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(ellipse 50% 60% at 85% 20%, rgba(0,240,255,0.10), transparent 70%),
+      radial-gradient(ellipse 45% 55% at 10% 90%, rgba(252,238,10,0.08), transparent 70%),
+      var(--black);
   }
+  /* Grid floor + scanlines */
   .hero::before {
     content: '';
     position: absolute; inset: 0;
+    z-index: -1;
     background:
-      radial-gradient(ellipse 45% 55% at 78% 45%, rgba(242,179,61,0.09) 0%, transparent 70%),
-      linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
-    background-size: auto, 60px 60px, 60px 60px;
-    z-index: 0;
+      repeating-linear-gradient(to bottom, rgba(255,255,255,0.035) 0 1px, transparent 1px 3px),
+      linear-gradient(rgba(0,240,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,240,255,0.05) 1px, transparent 1px);
+    background-size: auto, 64px 64px, 64px 64px;
     pointer-events: none;
   }
-  .hero > * { position: relative; z-index: 1; }
-  .hero-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-  }
-  .hero-tag::before {
+  /* A slow scan band that sweeps down the hero */
+  .hero::after {
     content: '';
-    width: 24px; height: 1px;
-    background: var(--accent);
+    position: absolute;
+    left: 0; right: 0; top: -20%;
+    height: 18%;
+    z-index: -1;
+    background: linear-gradient(to bottom, transparent, rgba(0,240,255,0.06), transparent);
+    animation: scanBand 7s linear infinite;
+    pointer-events: none;
   }
+  @keyframes scanBand { to { transform: translateY(700%); } }
+
+  /* HUD frame: corner brackets and small readouts */
+  .hud-frame { position: absolute; inset: 6rem 2rem 2rem; pointer-events: none; z-index: 0; }
+  .hud-frame i {
+    position: absolute;
+    width: 26px; height: 26px;
+    border: 0 solid rgba(0,240,255,0.55);
+  }
+  .hud-frame i:nth-child(1) { top: 0; left: 0; border-top-width: 2px; border-left-width: 2px; }
+  .hud-frame i:nth-child(2) { top: 0; right: 0; border-top-width: 2px; border-right-width: 2px; }
+  .hud-frame i:nth-child(3) { bottom: 0; left: 0; border-bottom-width: 2px; border-left-width: 2px; }
+  .hud-frame i:nth-child(4) { bottom: 0; right: 0; border-bottom-width: 2px; border-right-width: 2px; }
+  .hud {
+    position: absolute;
+    font-family: var(--font-hud);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(0,240,255,0.75);
+    z-index: 1;
+  }
+  .hud-tl { top: 7rem; left: 4rem; }
+  .hud-tr { top: 7rem; right: 4rem; display: flex; align-items: center; gap: 0.6rem; }
+  .hud-tr b { width: 8px; height: 8px; background: var(--cp-red); border-radius: 50%; animation: recBlink 1.2s steps(2) infinite; }
+  @keyframes recBlink { 50% { opacity: 0; } }
+  .hud-br { bottom: 3rem; right: 4rem; color: rgba(240,242,245,0.45); }
+
+  .hero-text { position: relative; z-index: 1; padding-left: 1rem; }
   .hero-name {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(4rem, 10.5vw, 10rem);
-    line-height: 0.88;
+    font-size: clamp(4.2rem, 13vw, 12.5rem);
+    line-height: 0.86;
     letter-spacing: 0.01em;
     text-transform: uppercase;
     margin-bottom: 2rem;
   }
-  .hero-name .line2 { color: transparent; -webkit-text-stroke: 1.5px rgba(240,242,245,0.45); }
+  .hero-name .gl { position: relative; display: inline-block; }
+  .hero-name .line2 { color: transparent; -webkit-text-stroke: 1.5px var(--cp-yellow); }
+
+  /* Glitch layers: cyan and red copies of each line, hidden until a glitch fires */
+  .gl::before,
+  .gl::after {
+    content: attr(data-text);
+    position: absolute; inset: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .gl::before { color: var(--cp-cyan); }
+  .gl::after { color: var(--cp-red); }
+  .line2.gl::before { color: transparent; -webkit-text-stroke-color: var(--cp-cyan); }
+  .line2.gl::after { color: transparent; -webkit-text-stroke-color: var(--cp-red); }
+  .hero.is-glitching .gl { animation: glitchSkew 0.45s steps(3) both; }
+  .hero.is-glitching .gl::before { opacity: 0.9; animation: glitchA 0.45s steps(2) both; }
+  .hero.is-glitching .gl::after { opacity: 0.9; animation: glitchB 0.45s steps(2) both; }
+  .hero.is-glitching .hero-line { animation: flicker 0.45s steps(4) both; }
+  @keyframes glitchA {
+    0%   { clip-path: inset(8% 0 72% 0);  transform: translate(-7px, 0); }
+    20%  { clip-path: inset(58% 0 12% 0); transform: translate(6px, 0); }
+    40%  { clip-path: inset(30% 0 46% 0); transform: translate(-4px, 0); }
+    60%  { clip-path: inset(80% 0 4% 0);  transform: translate(8px, 0); }
+    80%  { clip-path: inset(4% 0 86% 0);  transform: translate(-5px, 0); }
+    100% { clip-path: inset(44% 0 40% 0); transform: translate(3px, 0); }
+  }
+  @keyframes glitchB {
+    0%   { clip-path: inset(64% 0 18% 0); transform: translate(7px, 0); }
+    20%  { clip-path: inset(12% 0 70% 0); transform: translate(-6px, 0); }
+    40%  { clip-path: inset(48% 0 30% 0); transform: translate(5px, 0); }
+    60%  { clip-path: inset(2% 0 88% 0);  transform: translate(-8px, 0); }
+    80%  { clip-path: inset(76% 0 8% 0);  transform: translate(4px, 0); }
+    100% { clip-path: inset(26% 0 58% 0); transform: translate(-3px, 0); }
+  }
+  @keyframes glitchSkew {
+    0%   { transform: none; }
+    33%  { transform: skewX(-9deg) translateX(5px); }
+    66%  { transform: skewX(6deg) translateX(-3px); }
+    100% { transform: none; }
+  }
+  @keyframes flicker { 25% { opacity: 0.2; } 50% { opacity: 1; } 75% { opacity: 0.4; } }
+
   .hero-line {
     font-size: clamp(1.05rem, 1.6vw, 1.3rem);
     line-height: 1.6;
     color: var(--text-2);
-    max-width: 34ch;
+    max-width: 40ch;
     margin-bottom: 2.5rem;
   }
   .hero-line em { font-style: normal; color: var(--white); }
@@ -214,11 +289,21 @@
     display: flex;
     align-items: center;
     gap: 2rem;
-    font-size: 0.72rem;
+    font-family: var(--font-hud);
+    font-size: 0.85rem;
+    font-weight: 600;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--text-3);
   }
+  /* Yellow cut-corner chip */
+  .hero-meta .status {
+    padding: 0.55rem 1.4rem 0.55rem 1rem;
+    background: var(--cp-yellow);
+    color: var(--black);
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  }
+  .hero-meta .status::before { background: var(--black); animation: none; box-shadow: none; }
   .status { display: inline-flex; align-items: center; gap: 0.6rem; color: var(--text-2); }
   .status::before {
     content: '';
@@ -231,49 +316,6 @@
   @keyframes pulse {
     70% { box-shadow: 0 0 0 8px rgba(95,211,141,0); }
     100% { box-shadow: 0 0 0 0 rgba(95,211,141,0); }
-  }
-
-  /* Hero card stack */
-  .stack-wrap { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-  .stack {
-    position: relative;
-    width: min(100%, 340px);
-    aspect-ratio: 4 / 5;
-  }
-  .stack-card {
-    position: absolute; inset: 0;
-    border-radius: 10px;
-    overflow: hidden;
-    background: var(--gray);
-    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06);
-    transition: transform 0.9s var(--ease), opacity 0.9s var(--ease), filter 0.9s var(--ease);
-    cursor: pointer;
-  }
-  .stack-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .stack-card[data-pos="0"] { transform: rotate(-2deg); z-index: 4; }
-  .stack-card[data-pos="1"] { transform: translate(26px, -18px) rotate(5deg) scale(0.95); z-index: 3; filter: brightness(0.7); }
-  .stack-card[data-pos="2"] { transform: translate(-30px, -30px) rotate(-8deg) scale(0.9); z-index: 2; filter: brightness(0.5); }
-  .stack-card[data-pos="3"] { transform: translate(6px, -44px) rotate(10deg) scale(0.85); z-index: 1; filter: brightness(0.35); }
-  .stack-card.is-leaving { transform: translate(-60px, 40px) rotate(-14deg) scale(0.9); opacity: 0; }
-  .stack-label {
-    position: absolute;
-    left: 0.9rem; bottom: 0.9rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: 100px;
-    background: rgba(10,10,10,0.72);
-    backdrop-filter: blur(6px);
-    font-size: 0.68rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--white);
-  }
-  .stack-label b { color: var(--accent); font-weight: 500; }
-  .stack-hint {
-    font-size: 0.68rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--text-3);
   }
 
   /* CLIENT STRIP */
@@ -964,9 +1006,13 @@
     .nav-links { display: none; }
     .nav-toggle { display: block; }
     section { padding: 5rem 1.25rem; }
-    .hero { grid-template-columns: 1fr; padding: 7rem 1.25rem 3.5rem; gap: 3.5rem; min-height: auto; }
-    .hero-meta { flex-wrap: wrap; gap: 1rem 2rem; }
-    .stack { width: min(76vw, 280px); }
+    .hero { padding: 7rem 1.25rem 4rem; min-height: auto; }
+    .hud-frame { inset: 5rem 0.75rem 1rem; }
+    .hud-tl, .hud-tr { top: 5.75rem; }
+    .hud-tl { left: 1.75rem; }
+    .hud-tr { right: 1.75rem; }
+    .hud-br { display: none; }
+    .hero-text { padding: 2.5rem 0.5rem 0; }
     .clients { flex-direction: column; align-items: stretch; }
     .clients-label { border-right: none; border-bottom: 1px solid var(--line); padding: 0.9rem 1.25rem; }
     .marquee { padding: 1rem 0; }
@@ -1022,26 +1068,20 @@
 
 <!-- HERO -->
 <header class="hero" id="home">
+  <div class="hud-frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="hud hud-tl" aria-hidden="true">// portfolio_v2.6</div>
+  <div class="hud hud-tr" aria-hidden="true"><b></b>Live</div>
   <div class="hero-text">
     <h1 class="hero-name">
-      Bayasgalan<br>
-      <span class="line2">Tumendamba</span>
+      <span class="gl" data-text="Bayasgalan">Bayasgalan</span><br>
+      <span class="gl line2" data-text="Tumendamba">Tumendamba</span>
     </h1>
     <p class="hero-line">Logos, posters, campaigns and short edits — <em>for an airport, a film studio and a few brands with character.</em></p>
     <div class="hero-meta">
       <span class="status">Open to new projects</span>
-      <span>Scroll ↓</span>
     </div>
   </div>
-  <div class="stack-wrap">
-    <div class="stack" id="stack">
-      <div class="stack-card" data-project="0" data-media="4"><img src="cover-ckia-4.jpg" alt="Air traffic post from the #CKIA5жил campaign"><div class="stack-label"><b>Campaign</b> · #CKIA5жил</div></div>
-      <div class="stack-card" data-project="1" data-media="3"><img src="cover-tselmeg.jpg" alt="Tselmeg Trade logo icon"><div class="stack-label"><b>Identity</b> · Tselmeg Trade</div></div>
-      <div class="stack-card" data-project="1" data-media="1"><img src="cover-bayferic.jpg" alt="Bayferic Racing logo"><div class="stack-label"><b>Identity</b> · Bayferic Racing</div></div>
-      <div class="stack-card" data-project="0" data-media="5"><img src="cover-naadam.jpg" alt="Naadam greeting poster for NUBIA"><div class="stack-label"><b>Poster</b> · NUBIA Naadam</div></div>
-    </div>
-    <div class="stack-hint">The pile shuffles. Tap one to open.</div>
-  </div>
+  <div class="hud hud-br" aria-hidden="true">Scroll ↓</div>
 </header>
 
 <!-- CLIENTS -->
@@ -1317,7 +1357,7 @@
     })();
     // Grow into a "View" bubble over anything that opens a project
     document.addEventListener('mouseover', e => {
-      const viewable = !!e.target.closest('.work-card, .stack-card');
+      const viewable = !!e.target.closest('.work-card');
       ring.classList.toggle('is-view', viewable);
       cursor.classList.toggle('is-hidden', viewable);
     });
@@ -1345,23 +1385,28 @@
   }, { threshold: 0.12 });
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
-  // Hero card stack: the top card slides off to the back every few seconds
-  const stackCards = [...document.querySelectorAll('.stack-card')];
-  stackCards.forEach((c, i) => c.dataset.pos = i);
-  let stackPaused = false;
-  document.getElementById('stack').addEventListener('mouseenter', () => stackPaused = true);
-  document.getElementById('stack').addEventListener('mouseleave', () => stackPaused = false);
-  function shuffleStack() {
-    if (stackPaused || document.hidden) return;
-    const top = stackCards.find(c => c.dataset.pos === '0');
-    top.classList.add('is-leaving');
-    setTimeout(() => {
-      stackCards.forEach(c => c.dataset.pos = (Number(c.dataset.pos) + stackCards.length - 1) % stackCards.length);
-      top.classList.remove('is-leaving');
-    }, 450);
+  // Hero glitch: every few seconds the name tears into cyan/red slices for a split second
+  const heroEl = document.getElementById('home');
+  function glitchOnce() {
+    heroEl.classList.remove('is-glitching');
+    void heroEl.offsetWidth; // restart the animation
+    heroEl.classList.add('is-glitching');
+    setTimeout(() => heroEl.classList.remove('is-glitching'), 450);
   }
-  if (!reduceMotion) setInterval(shuffleStack, 3400);
-  stackCards.forEach(c => c.addEventListener('click', () => openProject(Number(c.dataset.project), c, Number(c.dataset.media))));
+  function scheduleGlitch() {
+    setTimeout(() => {
+      if (!document.hidden) {
+        glitchOnce();
+        // Sometimes it stutters twice
+        if (Math.random() < 0.35) setTimeout(glitchOnce, 520);
+      }
+      scheduleGlitch();
+    }, 2800 + Math.random() * 4200);
+  }
+  if (!reduceMotion) {
+    scheduleGlitch();
+    document.querySelector('.hero-name').addEventListener('mouseenter', glitchOnce);
+  }
 
   // Contact form
   async function handleSubmit(e) {
