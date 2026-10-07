@@ -237,45 +237,17 @@
   .hero-name .gl { position: relative; display: inline-block; }
   .hero-name .line2 { color: transparent; -webkit-text-stroke: 1.5px var(--cp-yellow); }
 
-  /* Glitch layers: cyan and red copies of each line, hidden until a glitch fires */
-  .gl::before,
-  .gl::after {
-    content: attr(data-text);
-    position: absolute; inset: 0;
-    opacity: 0;
+  /* Glitch: JS fires short bursts of random frames — displaced slices, scrambled letters, noise blocks */
+  .gl-slice {
+    position: absolute; left: 0; top: 0;
+    white-space: nowrap;
+    visibility: hidden;
     pointer-events: none;
+    -webkit-text-stroke: 0;
   }
-  .gl::before { color: var(--cp-cyan); }
-  .gl::after { color: var(--cp-red); }
-  .line2.gl::before { color: transparent; -webkit-text-stroke-color: var(--cp-cyan); }
-  .line2.gl::after { color: transparent; -webkit-text-stroke-color: var(--cp-red); }
-  .hero.is-glitching .gl { animation: glitchSkew 0.45s steps(3) both; }
-  .hero.is-glitching .gl::before { opacity: 0.9; animation: glitchA 0.45s steps(2) both; }
-  .hero.is-glitching .gl::after { opacity: 0.9; animation: glitchB 0.45s steps(2) both; }
-  .hero.is-glitching .hero-line { animation: flicker 0.45s steps(4) both; }
-  @keyframes glitchA {
-    0%   { clip-path: inset(8% 0 72% 0);  transform: translate(-7px, 0); }
-    20%  { clip-path: inset(58% 0 12% 0); transform: translate(6px, 0); }
-    40%  { clip-path: inset(30% 0 46% 0); transform: translate(-4px, 0); }
-    60%  { clip-path: inset(80% 0 4% 0);  transform: translate(8px, 0); }
-    80%  { clip-path: inset(4% 0 86% 0);  transform: translate(-5px, 0); }
-    100% { clip-path: inset(44% 0 40% 0); transform: translate(3px, 0); }
-  }
-  @keyframes glitchB {
-    0%   { clip-path: inset(64% 0 18% 0); transform: translate(7px, 0); }
-    20%  { clip-path: inset(12% 0 70% 0); transform: translate(-6px, 0); }
-    40%  { clip-path: inset(48% 0 30% 0); transform: translate(5px, 0); }
-    60%  { clip-path: inset(2% 0 88% 0);  transform: translate(-8px, 0); }
-    80%  { clip-path: inset(76% 0 8% 0);  transform: translate(4px, 0); }
-    100% { clip-path: inset(26% 0 58% 0); transform: translate(-3px, 0); }
-  }
-  @keyframes glitchSkew {
-    0%   { transform: none; }
-    33%  { transform: skewX(-9deg) translateX(5px); }
-    66%  { transform: skewX(6deg) translateX(-3px); }
-    100% { transform: none; }
-  }
-  @keyframes flicker { 25% { opacity: 0.2; } 50% { opacity: 1; } 75% { opacity: 0.4; } }
+  .line2 .gl-slice { -webkit-text-stroke: 1.5px var(--slice, var(--cp-cyan)); }
+  .glitch-blocks { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+  .glitch-blocks i { position: absolute; display: block; visibility: hidden; }
 
   .hero-line {
     font-size: clamp(1.05rem, 1.6vw, 1.3rem);
@@ -1040,6 +1012,52 @@
     .marquee-track, .status::before { animation: none; }
     .fade-up { opacity: 1; transform: none; transition: none; }
   }
+
+  /* ===== Cyberpunk layer: small, consistent accents across the whole site ===== */
+  :root { --accent: #fcee0a; --cyan: #00f0ff; }
+  nav { border-bottom-color: rgba(0,240,255,0.12); }
+
+  .section-label { font-family: var(--font-hud); font-size: 0.85rem; letter-spacing: 0.22em; }
+  .section-label::before { content: '//'; width: auto; height: auto; background: none; color: var(--cyan); letter-spacing: 0; }
+  .marquee-item span { color: var(--cyan); }
+  .status::before { background: var(--cyan); box-shadow: none; animation: none; }
+
+  /* Sharp corners instead of rounded ones */
+  .about-image-wrap img, .gallery-stage img, .gallery-stage video { border-radius: 2px; }
+  .about-accent-box { border-color: var(--cyan); border-radius: 0; }
+  .w-graphic .card-media img, .gallery-thumb, .skill-tool,
+  .form-field input, .form-field textarea { border-radius: 2px; }
+
+  /* Work cards: square with a clipped corner, thin cyan edge on hover */
+  .work-card {
+    border-radius: 2px;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+    outline: 1px solid transparent;
+    outline-offset: -1px;
+    transition: outline-color 0.3s;
+  }
+  .work-card:hover { outline-color: rgba(0,240,255,0.5); }
+  .work-card-arrow { border-radius: 2px; }
+  .work-card-count {
+    font-family: var(--font-hud);
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 2px;
+    border-color: rgba(252,238,10,0.45);
+    color: var(--accent);
+  }
+
+  /* Buttons: solid ones get the cut corner, outlined ones go square */
+  .btn-send, .gallery-link {
+    border-radius: 0;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  }
+  .project-nav-btn, .project-close { border-radius: 2px; font-family: var(--font-hud); font-weight: 600; }
+
+  .skill-num { font-family: var(--font-hud); font-weight: 600; font-size: 1rem; }
+  .contact-big span { color: transparent; -webkit-text-stroke: 1.5px var(--accent); }
+  .cursor-ring { border-color: rgba(0,240,255,0.6); }
+  .gallery-btn { border-radius: 2px; }
 </style>
 </head>
 <body>
@@ -1385,27 +1403,116 @@
   }, { threshold: 0.12 });
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
-  // Hero glitch: every few seconds the name tears into cyan/red slices for a split second
+  // Hero glitch, in the spirit of Cyberpunk 2077: short bursts of random frames —
+  // displaced slices in RGB colors, scrambled letters, flicker and digital noise blocks.
   const heroEl = document.getElementById('home');
-  function glitchOnce() {
-    heroEl.classList.remove('is-glitching');
-    void heroEl.offsetWidth; // restart the animation
-    heroEl.classList.add('is-glitching');
-    setTimeout(() => heroEl.classList.remove('is-glitching'), 450);
+  const heroName = heroEl.querySelector('.hero-name');
+  const heroLine = heroEl.querySelector('.hero-line');
+  const glitchLines = [...heroName.querySelectorAll('.gl')];
+  const GLYPHS = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&@/\\<>_=+*'];
+  const SLICE_COLORS = ['#00f0ff', '#ff003c', '#fcee0a', '#f0f2f5'];
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  heroName.setAttribute('aria-label', 'Bayasgalan Tumendamba');
+  glitchLines.forEach(el => {
+    el.dataset.text = el.textContent;
+    for (let i = 0; i < 4; i++) {
+      const s = document.createElement('span');
+      s.className = 'gl-slice';
+      s.setAttribute('aria-hidden', 'true');
+      s.textContent = el.dataset.text;
+      el.appendChild(s);
+    }
+  });
+  const blockLayer = document.createElement('div');
+  blockLayer.className = 'glitch-blocks';
+  blockLayer.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 6; i++) blockLayer.appendChild(document.createElement('i'));
+  heroEl.appendChild(blockLayer);
+
+  function scramble(text, count) {
+    const chars = [...text];
+    for (let i = 0; i < count; i++) chars[Math.floor(Math.random() * chars.length)] = pick(GLYPHS);
+    return chars.join('');
   }
+
+  function glitchFrame(power) {
+    glitchLines.forEach(el => {
+      const outline = el.classList.contains('line2');
+      el.firstChild.nodeValue = Math.random() < 0.35 * power
+        ? scramble(el.dataset.text, 1 + Math.floor(Math.random() * 3))
+        : el.dataset.text;
+      el.style.transform = Math.random() < 0.5 ? `translateX(${rand(-8, 8) * power}px)` : '';
+      el.querySelectorAll('.gl-slice').forEach(s => {
+        if (Math.random() < 0.3) { s.style.visibility = 'hidden'; return; }
+        const top = rand(0, 88), h = rand(5, 28);
+        const color = pick(SLICE_COLORS);
+        s.style.visibility = 'visible';
+        s.style.clipPath = `inset(${top}% -20% ${Math.max(0, 100 - top - h)}% -20%)`;
+        s.style.transform = `translateX(${rand(-34, 34) * power}px)`;
+        s.style.setProperty('--slice', color);
+        s.style.color = outline && Math.random() < 0.6 ? 'transparent' : color;
+      });
+    });
+    heroLine.style.opacity = Math.random() < 0.3 ? rand(0.2, 0.7) : '';
+    const hero = heroEl.getBoundingClientRect();
+    // Keep noise blocks over the letters themselves, not the empty width of the heading
+    const rects = glitchLines.map(el => el.getBoundingClientRect());
+    const name = {
+      left: Math.min(...rects.map(r => r.left)),
+      top: Math.min(...rects.map(r => r.top)),
+      width: Math.max(...rects.map(r => r.right)) - Math.min(...rects.map(r => r.left)),
+      height: Math.max(...rects.map(r => r.bottom)) - Math.min(...rects.map(r => r.top))
+    };
+    [...blockLayer.children].forEach(b => {
+      if (Math.random() > 0.35 * power) { b.style.visibility = 'hidden'; return; }
+      b.style.visibility = 'visible';
+      b.style.left = (name.left - hero.left + rand(0, name.width * 0.9)) + 'px';
+      b.style.top = (name.top - hero.top + rand(0, name.height)) + 'px';
+      b.style.width = rand(20, Math.min(220, name.width * 0.4)) + "px";
+      b.style.height = rand(3, 16) + 'px';
+      b.style.background = pick(SLICE_COLORS);
+      b.style.opacity = rand(0.5, 0.9);
+    });
+  }
+
+  function clearGlitch() {
+    glitchLines.forEach(el => {
+      el.firstChild.nodeValue = el.dataset.text;
+      el.style.transform = '';
+      el.querySelectorAll('.gl-slice').forEach(s => { s.style.visibility = 'hidden'; });
+    });
+    heroLine.style.opacity = '';
+    [...blockLayer.children].forEach(b => { b.style.visibility = 'hidden'; });
+  }
+
+  // One burst = 3–8 frames, each held for 28–75ms, so no two glitches look the same
+  let glitching = false;
+  function glitchBurst(power = 1) {
+    if (glitching) return;
+    glitching = true;
+    let frames = 3 + Math.floor(Math.random() * 6);
+    (function step() {
+      if (frames-- <= 0) { clearGlitch(); glitching = false; return; }
+      glitchFrame(power);
+      setTimeout(step, rand(28, 75));
+    })();
+  }
+
   function scheduleGlitch() {
     setTimeout(() => {
       if (!document.hidden) {
-        glitchOnce();
-        // Sometimes it stutters twice
-        if (Math.random() < 0.35) setTimeout(glitchOnce, 520);
+        glitchBurst(rand(0.6, 1.2));
+        // Sometimes an aftershock
+        if (Math.random() < 0.4) setTimeout(() => glitchBurst(rand(0.4, 0.9)), rand(650, 1100));
       }
       scheduleGlitch();
-    }, 2800 + Math.random() * 4200);
+    }, rand(2500, 6500));
   }
   if (!reduceMotion) {
     scheduleGlitch();
-    document.querySelector('.hero-name').addEventListener('mouseenter', glitchOnce);
+    heroName.addEventListener('mouseenter', () => glitchBurst(1.2));
   }
 
   // Contact form
